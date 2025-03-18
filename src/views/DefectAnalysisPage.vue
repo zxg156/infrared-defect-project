@@ -317,40 +317,52 @@ const nextPage = (device) => {
 </script>
 
 <style scoped>
+/* 确保 html 和 body 没有默认的边距 */
 html, body {
-  margin: 10;
-  padding: 0.1rem;
+  margin: 0;
+  padding: 0;
   height: 100%;
   width: 100%;
   overflow-x: hidden; /* 防止出现水平滚动条 */
 }
 
 .container {
-  min-height: 100vh;
-  width: 100%; /* 宽度设置为100%，去除多余宽度 */
+  min-height: 65vh;
+  width: 100%; /* 设置宽度为 100% */
   background: #f5f7fa;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  margin: 0 auto; /* 水平居中 */
-  padding: 0.1rem; /* 添加内边距 */
+  margin: 0; /* 去除外边距 */
+  padding: 0; /* 去除内边距 */
 }
 
 .header {
-  position: fixed; /* 固定定位 */
-  top: 0; /* 置顶 */
-  left: 0; /* 左对齐 */
-  width: 100%; /* 宽度与屏幕一致 */
-  background: #70c4bf; /* 背景颜色 */
-  box-shadow: 0 2px 4px rgba(129, 48, 48, 0.1); /* 添加阴影 */
-  z-index: 200; /* 确保标题在其他内容之上 */
-  margin-bottom: 0; /* 移除底部外边距 */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #70c4bf;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 200;
   text-align: center;
+  padding: 1rem;
 }
 
 .content {
-  margin-top: 80px; /* 顶部外边距，避免内容被标题覆盖 */
-  padding: 1rem; /* 添加内边距 */
+  margin-top: 10px; /* 顶部外边距，避免内容被标题覆盖 */
+  padding: 0.1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 确保子组件宽度与容器一致 */
+.DeviceSelection,
+.TemperatureInput,
+.ResultDisplay,
+.history-section {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .history-table {
@@ -421,17 +433,15 @@ html, body {
 
 @media (max-width: 768px) {
   .container {
-    padding: 0.5rem;
-    min-height: 100vh;
-    width: 100%; /* 小屏幕下宽度设置为100% */
+    padding: 0.1rem;
   }
 
   .header {
-    padding: 0.5rem; /* 小屏幕下减少内边距 */
+    padding: 0.5rem;
   }
 
   .content {
-    margin-top: 60px; /* 小屏幕下减少顶部外边距 */
+    margin-top: 10px;
   }
 
   .history-table th,
@@ -441,8 +451,8 @@ html, body {
   }
 
   .btn {
-    padding: 0.4rem 0.8rem;
+    padding: 0.1rem 0.2rem;
     font-size: 0.8rem;
   }
 }
-</style>    
+</style>
