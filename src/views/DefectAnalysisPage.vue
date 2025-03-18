@@ -3,87 +3,103 @@
     <div class="header">
       <h1>设备缺陷分析系统</h1>
     </div>
-    <DeviceSelection
-      :devices="devices"
-      :selectedDevice="selectedDevice"
-      :error="error"
-      @device-selected="selectDevice"
-    />
-    <TemperatureInput
-      v-if="step === 2"
-      :T0="T0"
-      :T1="T1"
-      :T2="T2"
-      :error="error"
-      @go-back="step = 1"
-      @calculate="calculateDelta"
-      @update:T0="T0 = $event"
-      @update:T1="T1 = $event"
-      @update:T2="T2 = $event"
-    />
-    <ResultDisplay
-      v-if="step === 3"
-      :delta="delta"
-      :defectLevel="defectLevel"
-      :defectConditions="defectConditions"
-      :T0="T0"
-      :T1="T1"
-      :T2="T2"
-      :device="devices[selectedDevice]"
-      :timestamp="timestamp"
-      @reset="reset"
-    />
-    <div v-if="measurementHistory.length > 0">
-      <button @click="toggleHistory" class="btn secondary">
-        {{ isHistoryExpanded ? '收起测量履历' : '展开测量履历' }}
-      </button>
-      <div v-if="isHistoryExpanded">
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="搜索履历..."
-          class="search-input"
-        />
-        <div v-for="(group, device) in filteredGroupedHistory" :key="device">
-          <h3>{{ device }}</h3>
-          <table class="history-table">
-            <thead>
-              <tr>
-                <th>测量日期和时间</th>
-                <th>温度数值 (T0, T1, T2)</th>
-                <th>δ值</th>
-                <th>缺陷等级</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
+    <!-- 为内容添加一个容器，设置顶部外边距以避免被标题覆盖 -->
+    <div class="content">
+      <DeviceSelection
+        :devices="devices"
+        :selectedDevice="selectedDevice"
+        :error="error"
+        @device-selected="selectDevice"
+      />
+      <TemperatureInput
+        v-if="step === 2"
+        :T0="T0"
+        :T1="T1"
+        :T2="T2"
+        :error="error"
+        @go-back="step = 1"
+        @calculate="calculateDelta"
+        @update:T0="T0 = $event"
+        @update:T1="T1 = $event"
+        @update:T2="T2 = $event"
+      />
+      <ResultDisplay
+        v-if="step === 3"
+        :delta="delta"
+        :defectLevel="defectLevel"
+        :defectConditions="defectConditions"
+        :T0="T0"
+        :T1="T1"
+        :T2="T2"
+        :device="devices[selectedDevice]"
+        :timestamp="timestamp"
+        @reset="reset"
+      />
+      <div v-if="measurementHistory.length > 0">
+        <button @click="toggleHistory" class="btn secondary">
+          {{ isHistoryExpanded ? '收起测量履历' : '展开测量履历' }}
+        </button>
+        <div v-if="isHistoryExpanded">
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="搜索履历..."
+            class="search-input"
+          />
+          <div v-for="(group, device) in filteredGroupedHistory" :key="device">
+            <h3>{{ device }}</h3>
+            <div class="history-cards" v-if="isMobile">
+              <div
                 v-for="history in paginatedGroupedHistory[device]"
                 :key="history.timestamp"
                 :class="getDefectClass(history.defectLevel)"
+                class="history-card"
               >
-                <td>{{ history.timestamp }}</td>
-                <td>{{ `(${history.T0}℃, ${history.T1}℃, ${history.T2}℃)` }}</td>
-                <td>{{ history.delta }}%</td>
-                <td>{{ history.defectLevel }}</td>
-              </tr>
-            </tbody>
-          </table>
-          <div v-if="paginatedGroupedHistory[device].length > itemsPerPage">
-            <button
-              @click="prevPage(device)"
-              :disabled="currentPage[device] === 1"
-              class="btn page-btn"
-            >
-              上一页
-            </button>
-            <span>{{ currentPage[device] }} / {{ totalPages[device] }}</span>
-            <button
-              @click="nextPage(device)"
-              :disabled="currentPage[device] === totalPages[device]"
-              class="btn page-btn"
-            >
-              下一页
-            </button>
+                <p><strong>测量日期和时间:</strong> {{ history.timestamp }}</p>
+                <p><strong>温度数值 (T0, T1, T2):</strong> ({{ history.T0 }}℃, {{ history.T1 }}℃, {{ history.T2 }}℃)</p>
+                <p><strong>δ值:</strong> {{ history.delta }}%</p>
+                <p><strong>缺陷等级:</strong> {{ history.defectLevel }}</p>
+              </div>
+            </div>
+            <table class="history-table" v-else>
+              <thead>
+                <tr>
+                  <th>测量日期和时间</th>
+                  <th>温度数值 (T0, T1, T2)</th>
+                  <th>δ值</th>
+                  <th>缺陷等级</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="history in paginatedGroupedHistory[device]"
+                  :key="history.timestamp"
+                  :class="getDefectClass(history.defectLevel)"
+                >
+                  <td>{{ history.timestamp }}</td>
+                  <td>{{ `(${history.T0}℃, ${history.T1}℃, ${history.T2}℃)` }}</td>
+                  <td>{{ history.delta }}%</td>
+                  <td>{{ history.defectLevel }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div v-if="paginatedGroupedHistory[device].length > itemsPerPage">
+              <button
+                @click="prevPage(device)"
+                :disabled="currentPage[device] === 1"
+                class="btn page-btn"
+              >
+                上一页
+              </button>
+              <span>{{ currentPage[device] }} / {{ totalPages[device] }}</span>
+              <button
+                @click="nextPage(device)"
+                :disabled="currentPage[device] === totalPages[device]"
+                class="btn page-btn"
+              >
+                下一页
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -136,6 +152,13 @@ const searchQuery = ref('');
 const itemsPerPage = ref(5);
 const currentPage = ref({});
 const totalPages = ref({});
+const isMobile = ref(window.innerWidth <= 768);
+
+const handleResize = () => {
+  isMobile.value = window.innerWidth <= 768;
+};
+
+window.addEventListener('resize', handleResize);
 
 const selectDevice = (index) => {
   selectedDevice.value = index;
@@ -294,25 +317,40 @@ const nextPage = (device) => {
 </script>
 
 <style scoped>
-/* 修改背景颜色为浅蓝色 */
-body {
-  background-color: rgb(97, 200, 235);
+html, body {
+  margin: 10;
+  padding: 0.1rem;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden; /* 防止出现水平滚动条 */
 }
 
 .container {
-  max-width: flex;
-  padding: 0.1rem;
-  background: #59b9ab;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-height: 100vh;
+  width: 100%; /* 宽度设置为100%，去除多余宽度 */
+  background: #f5f7fa;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  margin: 0 auto; /* 水平居中 */
+  padding: 0.1rem; /* 添加内边距 */
 }
 
 .header {
+  position: fixed; /* 固定定位 */
+  top: 0; /* 置顶 */
+  left: 0; /* 左对齐 */
+  width: 100%; /* 宽度与屏幕一致 */
+  background: #70c4bf; /* 背景颜色 */
+  box-shadow: 0 2px 4px rgba(129, 48, 48, 0.1); /* 添加阴影 */
+  z-index: 200; /* 确保标题在其他内容之上 */
+  margin-bottom: 0; /* 移除底部外边距 */
   text-align: center;
-  margin-bottom: 1rem;
-  width: 100%;
-  height: 100%;
-  display: flex;
+}
+
+.content {
+  margin-top: 80px; /* 顶部外边距，避免内容被标题覆盖 */
+  padding: 1rem; /* 添加内边距 */
 }
 
 .history-table {
@@ -329,19 +367,19 @@ body {
 }
 
 .history-table th {
-  background-color: #b6c5bd;
+  background-color: #f0f9f4;
 }
 
 .warning {
-  background: #a2cc9c;
+  background: #fff3cd;
 }
 
 .critical-1 {
-  background: #e9a362;
+  background: #ffe5d0;
 }
 
 .critical-2 {
-  background: #cca6aa;
+  background: #f8d7da;
 }
 
 .btn {
@@ -355,7 +393,7 @@ body {
 }
 
 .secondary {
-  background: #aebeb7;
+  background: #e0e0e0;
 }
 
 .search-input {
@@ -369,4 +407,42 @@ body {
 .page-btn {
   margin: 0 0.5rem;
 }
-</style>
+
+.TemperatureInput input {
+  width: 70%;
+}
+
+.history-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0.5rem;
+    min-height: 100vh;
+    width: 100%; /* 小屏幕下宽度设置为100% */
+  }
+
+  .header {
+    padding: 0.5rem; /* 小屏幕下减少内边距 */
+  }
+
+  .content {
+    margin-top: 60px; /* 小屏幕下减少顶部外边距 */
+  }
+
+  .history-table th,
+  .history-table td {
+    padding: 0.4rem;
+    font-size: 0.8rem;
+  }
+
+  .btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+}
+</style>    
