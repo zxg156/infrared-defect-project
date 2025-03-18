@@ -296,14 +296,13 @@ const nextPage = (device) => {
 <style scoped>
 /* 修改背景颜色为浅蓝色 */
 body {
-  background-color: lightblue;
+  background-color: rgb(97, 200, 235);
 }
 
 .container {
-  max-width: 100%;
-  margin: 1rem;
-  padding: 1rem;
-  background: #c5cccb;
+  max-width: flex;
+  padding: 0.1rem;
+  background: #59b9ab;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -311,6 +310,9 @@ body {
 .header {
   text-align: center;
   margin-bottom: 1rem;
+  width: 100%;
+  height: 100%;
+  display: flex;
 }
 
 .history-table {
