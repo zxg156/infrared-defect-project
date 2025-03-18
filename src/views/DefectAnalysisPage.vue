@@ -206,10 +206,10 @@ const determineDefect = () => {
   let conditions = '';
   let level = '';
 
-  if (deltaValue >= 95 && temp > DEFECT_RULES[deviceType].level3.temp) {
-    level = '严重缺陷（二级）';
+  if (deltaValue >= 95) {
+    level = '危急缺陷';
     conditions = `δ ≥ 95% 且热点温度 > ${DEFECT_RULES[deviceType].level3.temp}℃`;
-  } else if (deltaValue >= 80) {
+  } else if (deltaValue >= 35 && deltaValue <= 80) {
     level = '严重缺陷（一级）';
     conditions = '80% ≥ δ ≥ 35%';
   } else if (deltaValue >= 35) {
@@ -293,7 +293,7 @@ const getDefectClass = (level) => {
     return 'warning';
   } else if (level === '严重缺陷（一级）') {
     return 'critical-1';
-  } else if (level === '严重缺陷（二级）') {
+  } else if (level === '危急缺陷') {
     return 'critical-2';
   }
   return '';
