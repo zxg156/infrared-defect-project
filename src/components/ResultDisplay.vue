@@ -70,7 +70,7 @@ const defectClass = computed(() => {
     return 'warning';
   } else if (props.defectLevel === '严重缺陷（一级）') {
     return 'critical-1';
-  } else if (props.defectLevel === '严重缺陷（二级）') {
+  } else if (props.defectLevel === '危急缺陷') {
     return 'critical-2';
   }
   return '';
