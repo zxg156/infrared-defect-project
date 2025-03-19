@@ -3,16 +3,16 @@
     <h2>输入温度数据 (℃)</h2>
     <div class="input-group">
       <div class="input-item">
+        <label>T0（环境温度）:</label>
+        <input type="number" :value="T0" @input="updateT0($event.target.value)" step="0.1">
+      </div>
+      <div class="input-item">
         <label>T1（发热点）:</label>
         <input type="number" :value="T1" @input="updateT1($event.target.value)" step="0.1">
       </div>
       <div class="input-item">
         <label>T2（正常点）:</label>
         <input type="number" :value="T2" @input="updateT2($event.target.value)" step="0.1">
-      </div>
-      <div class="input-item">
-        <label>T0（环境温度）:</label>
-        <input type="number" :value="T0" @input="updateT0($event.target.value)" step="0.1">
       </div>
     </div>
     <div class="button-group">

@@ -141,7 +141,8 @@ const devices = [
   "断路器动静触头",
   "断路器动静触头中间触头",
   "套管柱头",
-  "电容器熔丝"
+  "电容器熔丝",
+  "变压器箱体"
 ];
 const defectLevel = ref('');
 const defectConditions = ref('');
@@ -211,32 +212,57 @@ const calculateDelta = () => {
 const determineDefect = () => {
   const deviceType = getDeviceType();
   const deltaValue = parseFloat(delta.value);
-  const temp = parseFloat(T1.value);
 
   let conditions = '';
   let level = '';
 
-  if (deltaValue >= 95) {
-    level = '危急缺陷';
-    conditions = `δ ≥ 95% 且热点温度 > ${DEFECT_RULES[deviceType].level3.temp}℃`;
-  } else if (deltaValue >= 35 && deltaValue <= 80) {
-    level = '严重缺陷（一级）';
-    conditions = '80% ≥ δ ≥ 35%';
-  } else if (deltaValue >= 35) {
-    level = '一般缺陷';
-    conditions = 'δ ≥ 35%';
-  } else {
-    level = '正常状态';
+  switch (deviceType) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+      if (deltaValue >= 95) {
+        level = '危急缺陷';
+        conditions = 'δ ≥ 95%';
+      } else if (deltaValue >= 80) {
+        level = '严重缺陷';
+        conditions = '95% > δ ≥ 80%';
+      } else if (deltaValue >= 35) {
+        level = '一般缺陷';
+        conditions = '80% > δ ≥ 35%';
+      } else {
+        level = '合格';
+        conditions = 'δ < 35%';
+      }
+      break;
+    case 9:
+      if (deltaValue >= 35) {
+        level = '一般缺陷';
+        conditions = 'δ ≥ 35%';
+      } else {
+        level = '合格';
+        conditions = 'δ < 35%';
+      }
+      break;
   }
 
   defectLevel.value = level;
   defectConditions.value = conditions;
 };
 
-const getDeviceType = () => {
+/* const getDeviceType = () => {
   if (selectedDevice.value === 0) return 0;
   if (selectedDevice.value >= 1 && selectedDevice.value <= 4) return 1;
   return 2;
+}; */
+
+const getDeviceType = () => {
+  return selectedDevice.value;
 };
 
 const reset = () => {
@@ -306,12 +332,12 @@ const paginatedGroupedHistory = computed(() => {
 const getDefectClass = (level) => {
   if (level === '一般缺陷') {
     return 'warning';
-  } else if (level === '严重缺陷（一级）') {
+  } else if (level === '严重缺陷') {
     return 'critical-1';
   } else if (level === '危急缺陷') {
     return 'critical-2';
   }
-  return '';
+  return 'normal';
 };
 
 const toggleHistory = () => {
@@ -406,16 +432,20 @@ html, body {
   background-color: #f0f9f4;
 }
 
+.normal {
+  background: #d0f3b8;
+}
+
 .warning {
-  background: #fff3cd;
+  background: #e7d9a8;
 }
 
 .critical-1 {
-  background: #ffe5d0;
+  background: #eec8aa;
 }
 
 .critical-2 {
-  background: #f8d7da;
+  background: #d88080;
 }
 
 .btn {
