@@ -68,12 +68,12 @@ const emit = defineEmits(['reset']);
 const defectClass = computed(() => {
   if (props.defectLevel === '一般缺陷') {
     return 'warning';
-  } else if (props.defectLevel === '严重缺陷（一级）') {
+  } else if (props.defectLevel === '严重缺陷') {
     return 'critical-1';
   } else if (props.defectLevel === '危急缺陷') {
     return 'critical-2';
   }
-  return '';
+  return 'normal';
 });
 </script>
 
@@ -103,16 +103,20 @@ const defectClass = computed(() => {
   width: 30%;
 }
 
+.normal {
+  background: #d0f3b8;
+}
+
 .warning {
-  background: #fff3cd;
+  background: hsl(56, 93%, 72%);
 }
 
 .critical-1 {
-  background: #ffe5d0;
+  background: #f3b559;
 }
 
 .critical-2 {
-  background: #f8d7da;
+  background: #ff6d6d;
 }
 
 .btn {
