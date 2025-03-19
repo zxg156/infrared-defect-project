@@ -56,7 +56,7 @@ const emit = defineEmits(['device-selected']);
   padding: 0.8rem;
   border: 2px solid #cec9c9;
   border-radius: 6px;
-  background: rgb(205, 214, 212);
+  background: rgb(234, 243, 240);
   cursor: pointer;
   text-align: left;
   transition: all 0.2s;

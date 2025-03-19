@@ -4,7 +4,7 @@
       <h1>设备缺陷分析系统</h1>
     </div>
     <!-- 为内容添加一个容器，设置顶部外边距以避免被标题覆盖 -->
-    <div class="content">
+    <div class="content scrollable" ref="contentRef">
       <DeviceSelection
         :devices="devices"
         :selectedDevice="selectedDevice"
@@ -17,7 +17,7 @@
         :T1="T1"
         :T2="T2"
         :error="error"
-        @go-back="step = 1"
+        @go-back="handleGoBack"
         @calculate="calculateDelta"
         @update:T0="T0 = $event"
         @update:T1="T1 = $event"
@@ -160,10 +160,16 @@ const handleResize = () => {
 
 window.addEventListener('resize', handleResize);
 
+const contentRef = ref(null);
 const selectDevice = (index) => {
   selectedDevice.value = index;
   error.value = null;
   step.value = 2;
+
+  // 点击计算后滚动到最底端
+  if (contentRef.value) {
+    contentRef.value.scrollTop = contentRef.value.scrollHeight;
+  }
 };
 
 const validateInputs = () => {
@@ -196,6 +202,10 @@ const calculateDelta = () => {
     delta: delta.value,
     defectLevel: defectLevel.value
   });
+  // 点击计算后滚动到最底端
+  if (contentRef.value) {
+    contentRef.value.scrollTop = contentRef.value.scrollHeight;
+  }
 };
 
 const determineDefect = () => {
@@ -239,6 +249,11 @@ const reset = () => {
   error.value = null;
   defectLevel.value = '';
   defectConditions.value = '';
+};
+
+const handleGoBack = () => {
+  step.value = 1;
+  error.value = null;
 };
 
 const groupedHistory = computed(() => {
@@ -329,7 +344,7 @@ html, body {
 .container {
   min-height: 65vh;
   width: 100%; /* 设置宽度为 100% */
-  background: #f5f7fa;
+  background: #c4e4dc;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -344,9 +359,10 @@ html, body {
   width: 100%;
   background: #70c4bf;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 200;
+  z-index: 1;
   text-align: center;
   padding: 1rem;
+  position: sticky;
 }
 
 .content {
@@ -354,6 +370,14 @@ html, body {
   padding: 0.1rem;
   width: 100%;
   box-sizing: border-box;
+  padding-top: calc(1rem + 头部的高度); /* 确保内容不被头部覆盖 */
+  max-height: calc(100vh - 100px); /* 设置最大高度，减去头部高度 */
+  overflow-y: auto; /* 启用垂直滚动 */
+}
+
+.scrollable {
+  max-height: calc(100vh - 100px); /* 可以根据实际情况调整或者去掉 */
+  overflow-y: auto;
 }
 
 /* 确保子组件宽度与容器一致 */
